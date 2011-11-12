@@ -1,4 +1,4 @@
-name := "scalaship"
+name := "spacegame"
 
 version := "0.1"
 
