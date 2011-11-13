@@ -34,7 +34,8 @@ class Ship(_x: Double, _y: Double, _angle: Double) extends Moveable(_x, _y, 1d, 
     update_xy()
     draw()
 
-    ammos.map(_.tick)
+    ammos = ammos.filter(_.alive)
+    ammos.foreach(_.tick)
   }
 
   def alter_speed() {
@@ -63,8 +64,6 @@ class Ship(_x: Double, _y: Double, _angle: Double) extends Moveable(_x, _y, 1d, 
     } else chance(0.015) {
       shots = 3 + (random * 10).toInt
     }
-
-    ammos = ammos.filter(_.alive)
   }
 
   def draw() {

@@ -20,8 +20,8 @@ class Game {
 
   def tick() {
     glClear(GL_COLOR_BUFFER_BIT)
-    ships = ships.filter(_.alive)
 
+    ships = ships.filter(_.alive)
     ships.foreach(_.tick)
 
     detect_collisions()
