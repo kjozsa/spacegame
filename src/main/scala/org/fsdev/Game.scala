@@ -11,20 +11,25 @@ import scala.math.{ random => random }
  * @author kjozsa
  */
 class Game {
-  val ships = for {
-    i <- 1 to 20
+  val all_ships = for {
+    i <- 1 to 2000
     ship = new Ship(random * (Game.screen_x - 20) + 10, random * (Game.screen_y - 20) + 10, random * 360)
   } yield ship
 
-  var alive_ships = ships
+  var ships = all_ships
 
   def tick() {
     glClear(GL_COLOR_BUFFER_BIT)
-    ships.foreach(_.tick)
-    alive_ships = alive_ships.filter(_.alive)
+    ships = ships.filter(_.alive)
 
-    alive_ships.foreach { ship1 =>
-      alive_ships.foreach { ship2 =>
+    ships.foreach(_.tick)
+
+    detect_collisions()
+  }
+
+  def detect_collisions() {
+    ships.foreach { ship1 =>
+      ships.foreach { ship2 =>
         if (ship1.collided(ship2)) {
           Array(ship1, ship2).foreach(_.alive = false)
         }
@@ -70,7 +75,7 @@ object Game extends App with Logger {
     Display.update()
     Display.sync(60)
 
-    if (game.alive_ships.length < 2) {
+    if (game.ships.length < 2) {
       Thread.sleep(1000)
       game = new Game
     }

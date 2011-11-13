@@ -11,7 +11,6 @@ import scala.collection.mutable.LinkedList
  */
 class Ship(_x: Double, _y: Double, _angle: Double) extends Moveable(_x, _y, 1d, _angle) with Logger {
   override def bounding_box = (x - 5, x + 5, y, y + 15)
-
   var (r, g, b) = (random, random, random)
 
   // rotation
@@ -19,36 +18,36 @@ class Ship(_x: Double, _y: Double, _angle: Double) extends Moveable(_x, _y, 1d, 
   var r_dir = 1
 
   // speed
-  var s_dir = 1
-  var s_speed = 0d
+  var delta_dir = 1
+  var delta_speed = 0d
 
+  // ammo
   var shots = 0
   def shooting = shots > 0
   var ammos = new LinkedList[Ammo]()
 
   def tick() {
-    if (alive) {
-      alter_speed()
-      turn()
-      shoot()
-      update_xy()
-      draw()
-    }
+    alter_speed()
+    turn()
+    shoot()
+
+    update_xy()
+    draw()
+
+    ammos.map(_.tick)
   }
 
   def alter_speed() {
-    s_speed += 0.3 * random * s_dir
-    s_speed = scala.math.min(5, s_speed)
-    s_speed = scala.math.max(3, s_speed)
+    delta_speed += 0.3 * random * delta_dir
+    delta_speed = scala.math.min(5, delta_speed)
+    delta_speed = scala.math.max(3, delta_speed)
 
-    //    println("speed: " + speed + ", s_speed: " + s_speed + ", s_dir: " + s_dir)
+    if (speed < 1.4) delta_dir = 1
+    else if (speed > 10) delta_dir = -1
+    else chance(0.2) { delta_dir *= -1 }
 
-    if (speed < 1.4) s_dir = 1
-    else if (speed > 10) s_dir = -1
-    else chance(0.2) { s_dir *= -1 }
-
-    speed += s_speed
-    speed = scala.math.max(s_speed, 0.2)
+    speed += delta_speed
+    speed = scala.math.max(delta_speed, 0.2)
   }
 
   def turn() {
@@ -59,17 +58,16 @@ class Ship(_x: Double, _y: Double, _angle: Double) extends Moveable(_x, _y, 1d, 
 
   def shoot() {
     if (shooting) {
-      ammos ++= List(new Ammo(x, y, speed * 2, heading, ammos, (r, g, b)))
+      ammos ++= List(new Ammo(x, y, speed * 2, heading, (r, g, b)))
       shots -= 1
     } else chance(0.015) {
       shots = 3 + (random * 10).toInt
     }
+
+    ammos = ammos.filter(_.alive)
   }
 
   def draw() {
-    //    draw_bounding_box()
-    ammos.map(_.tick)
-
     glPushMatrix()
     glTranslated(x, y, 0)
     glRotated(heading, 0, 0, 1)
@@ -79,21 +77,6 @@ class Ship(_x: Double, _y: Double, _angle: Double) extends Moveable(_x, _y, 1d, 
     glVertex2i(0, 0)
     glVertex2i(6, 15)
     glVertex2i(-6, 15)
-    glEnd()
-    glPopMatrix()
-  }
-
-  def draw_bounding_box() {
-    glPushMatrix()
-    glTranslated(x, y, 0)
-    glRotated(heading, 0, 0, 1)
-    glColor3d(r, g, b)
-
-    glBegin(GL_QUADS)
-    glVertex2d(-5, 5)
-    glVertex2d(-5, 15)
-    glVertex2d(5, 15)
-    glVertex2d(5, 0)
     glEnd()
     glPopMatrix()
   }

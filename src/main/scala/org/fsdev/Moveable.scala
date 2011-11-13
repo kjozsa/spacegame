@@ -14,6 +14,8 @@ abstract class Moveable(_x: Double, _y: Double, _speed: Double, _heading: Double
   var heading = _heading
   var alive = true
 
+  def bounding_box: Tuple4[Double, Double, Double, Double]
+
   override def toString() = {
     val (x1, x2, y1, y2) = bounding_box
     "x1: " + x1.toInt + ", x2: " + x2.toInt + ", y1: " + y1.toInt + ", y2: " + y2.toInt + ", heading: " + heading.toInt
@@ -30,8 +32,6 @@ abstract class Moveable(_x: Double, _y: Double, _speed: Double, _heading: Double
     x += speed * cos(rad)
     y += speed * sin(rad)
   }
-
-  def bounding_box: Tuple4[Double, Double, Double, Double]
 
   def collided(other: Moveable) = {
     val (x1, x2, y1, y2) = bounding_box

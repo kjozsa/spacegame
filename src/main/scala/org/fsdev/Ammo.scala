@@ -9,7 +9,7 @@ import scala.collection.mutable.LinkedList
 /**
  * @author kjozsa
  */
-class Ammo(_x: Double, _y: Double, _speed: Double, _heading: Double, list: LinkedList[Ammo], rgb: Tuple3[Double, Double, Double])
+class Ammo(_x: Double, _y: Double, _speed: Double, _heading: Double, rgb: Tuple3[Double, Double, Double])
   extends Moveable(_x, _y, _speed, _heading) {
 
   override def bounding_box = (x - 1, x + 1, y - 1, y + 1)
@@ -17,21 +17,16 @@ class Ammo(_x: Double, _y: Double, _speed: Double, _heading: Double, list: Linke
   var life = 100
 
   def tick() {
-    if (alive) {
-      check_life()
-      update_xy()
+    check_life()
+    update_xy()
 
-      draw()
-    }
+    draw()
   }
 
   def check_life() {
     life -= 1
 
-    if (life == 0) {
-      alive = false
-      list.drop(0)
-    }
+    if (life == 0) alive = false
   }
 
   def draw() {
